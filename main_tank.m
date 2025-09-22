@@ -7,7 +7,7 @@ clearvars; close all; clc;
 % INPUT:
 % ----------------------------------------------------------------------------------------------------------------------
 city='Barranquilla'; % Options: Barranquilla, Bogota
-runCase='circularTank'; % Options: rectangularTank, circularTank
+runCase='rectangularTank'; % Options: rectangularTank, circularTank
 
 switch runCase
     case 'rectangularTank'
@@ -48,7 +48,7 @@ switch runCase
         Ri=3.0; % (Table 15.4-2, ASCE 7-22; recall that Ri = R)
         Rc=1.0; % (Rc is always equal to 1.0)
 
-        numConvectiveSprings=ceil(B/1.00); % (parallel to L; essentially, two rows of springs every 1.00 m)
+        numConvectiveSprings=3; % (number of rows of two springs each, oriented parallel to the L dimension)
 
     case 'circularTank'
         HL=3.00; % m (design depth of stored liquid)
@@ -87,7 +87,7 @@ switch runCase
         Ri=3.0; % (Table 15.4-2, ASCE 7-22; recall that Ri = R)
         Rc=1.0; % (Rc is always equal to 1.0)
 
-        numConvectiveSprings=24;
+        numConvectiveSprings=24; % (number of springs, oriented radially)
 end
 % ----------------------------------------------------------------------------------------------------------------------
 
@@ -96,7 +96,7 @@ end
 % ----------------------------------------------------------------------------------------------------------------------
 % BODY:
 % ----------------------------------------------------------------------------------------------------------------------
-g=9.81; % m/s2 (gravity acceleration)
+g=9.81; % m/s^2 (gravity acceleration)
 
 SS=3.75*Aa;
 S1=1.80*Av;
@@ -135,11 +135,11 @@ end
 % Fundamental period of vibration of structure's convective component:
 switch runCase
     case 'rectangularTank'
-        ghat=3.16*g*tanh(3.16*HL/L); % m/s2 (Eq. 9.2.4e, ACI 350.3-20; effective gravity acceleration)
+        ghat=3.16*g*tanh(3.16*HL/L); % m/s^2 (Eq. 9.2.4e, ACI 350.3-20; effective gravity acceleration)
         Tc=2*pi*sqrt(L/ghat); % s (Eq. 9.2.4f, ACI 350.3-20)
 
     case 'circularTank'
-        ghat=3.68*g*tanh(3.68*HL/D); % m/s2 (Eq. 9.3.4g, ACI 350.3-20; effective gravity acceleration)
+        ghat=3.68*g*tanh(3.68*HL/D); % m/s^2 (Eq. 9.3.4g, ACI 350.3-20; effective gravity acceleration)
         Tc=2*pi*sqrt(D/ghat); % s (Eq. 9.3.4h, ACI 350.3-20)
 end
 
@@ -156,7 +156,7 @@ end
 % Seismic response coefficient of structure's impulsive component:
 Csi=max([Sai/(Ri/Ie),0.044*SDS*Ie,0.03]); % (Eq. 12.8-2, 15.4.1, Eq. 15.4-1, ASCE 7-22)
 
-if S1>0.6
+if S1>=0.6
     Csi=max([Csi,0.8*S1/(Ri/Ie)]); % (15.4.1, Eq. 15.4-2, ASCE 7-22)
 end
 
@@ -207,8 +207,8 @@ switch runCase
         % 
         % hc=(1-(cosh(sqrt(10)*HL/L)-1)/(sqrt(10)*HL/L*sinh(sqrt(10)*HL/L)))*HL; % m (Eq. 9.2.2c, ACI 350.3-20)
 
-        hi=3/8*HL; % m (equivalent to Eq. 9.2.2b, ACI 350.3-20; obtained from exact integration)
-        hc=(1-1/10*sqrt(10)*tanh(1/2*sqrt(10)*HL/L)*L/HL)*HL; % m (equivalent to Eq. 9.2.2c, ACI 350.3-20; obtained from exact integration)
+        hi=3/8*HL; % m (equivalent to Eq. 9.2.2b, ACI 350.3-20; obtained from integrating half_Pixz(x,z) exactly)
+        hc=(1-1/10*sqrt(10)*tanh(1/2*sqrt(10)*HL/L)*L/HL)*HL; % m (equivalent to Eq. 9.2.2c, ACI 350.3-20; obtained from integrating half_Pcxz(x,z) exactly)
 
     case 'circularTank'
         % if D/HL<4/3
@@ -219,8 +219,8 @@ switch runCase
         % 
         % hc=(1-(cosh(3/2*sqrt(6)*HL/D)-1)/(3/2*sqrt(6)*HL/D*sinh(3/2*sqrt(6)*HL/D)))*HL; % m (Eq. 9.3.2c, ACI 350.3-20)
 
-        hi=3/8*HL; % m (equivalent to Eq. 9.3.2b, ACI 350.3-20; obtained from exact integration)
-        hc=(1-1/9*sqrt(6)*tanh(3/4*sqrt(6)*HL/D)*D/HL)*HL; % m (equivalent to Eq. 9.3.2c, ACI 350.3-20; obtained from exact integration)
+        hi=3/8*HL; % m (equivalent to Eq. 9.3.2b, ACI 350.3-20; obtained from integrating half_Pixtheta(x,theta) exactly)
+        hc=(1-1/9*sqrt(6)*tanh(3/4*sqrt(6)*HL/D)*D/HL)*HL; % m (equivalent to Eq. 9.3.2c, ACI 350.3-20; obtained from integrating half_Pcxtheta(x,theta) exactly)
 end
 
 % Maximum vertical displacement of oscillating wave measured from liquid's surface at rest:
@@ -234,13 +234,13 @@ switch runCase
         dmax=max([0.204*D*Ie/((2*g/(omegac^2*Sac*D)-1)*tanh(3.68*HL/D)),0.42*D*Ie*Sac]); % m (Eq. 7.1d, ACI 350.3-20, and Eq. 15.7-13, ASCE 7-22)
 end
 
-if d<dmax, warning('d<dmax'); end
+if d<dmax, warning('d<dmax'), end
 
 % Spring constants for liquid's convective component:
 switch runCase
     case 'rectangularTank'
         kc=2/numConvectiveSprings*(pi/Tc)^2*Wc/g; % kN/m (in the L direction)
-        fprintf('Place %d rows of springs with a stiffness of kc = %.6f kN/m at x = %.4f m parallel to the L dimension.\n',...
+        fprintf('Place %d rows, each consisting of two springs with stiffness kc = %.6f kN/m, at x = %.4f m and oriented parallel to the L dimension.\n',...
             numConvectiveSprings,kc,hc)
 
     case 'circularTank'

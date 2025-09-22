@@ -21,13 +21,15 @@ for i=1:2:length(varargin)
 end
 
 % Body:
-a=Asovers/Sd*fy/(0.85*fc); % in/in
+a=Asovers/Sd*fy/(0.85*fc); % in (10.2.7, 10.2.7.1, ACI 350-06)
 
-beta1=min([max([0.85-0.05/1000*(fc-4000),0.65]),0.85]);
+beta1=min([max([0.85-0.05/1000*(fc-4000),0.65]),0.85]); % (10.2.7.3, ACI 350-06)
 
-phi=min([max([0.90-10/9*(a/(beta1*d)-3/8),0.65]),0.90]);
+epsst=0.003*(beta1*d/a-1); % (10.2, ACI 350-06)
 
-if phi<0.817, warning('phi<0.817'); end % (10.3.5, ACI 350-06)
+if epsst<0.004, warning('epsst<0.004'), end % (10.3.5, ACI 350-06)
 
-phimn=phi*Asovers/Sd*fy*(d-a/2); % lb*in/in (flexure flow)
+phi=min([max([0.90-250/3*(0.005-epsst),0.65]),0.90]); % (10.3.3, 10.3.4, 9.3.2.1, 9.3.2.2, ACI 350-06)
+
+phimn=phi*Asovers/Sd*fy*(d-a/2); % lb*in/in (flexure flow; based on 10.2, 10.3, ACI 350-06)
 end

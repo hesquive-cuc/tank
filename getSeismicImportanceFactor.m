@@ -1,7 +1,7 @@
 function Ie=getSeismicImportanceFactor(varargin)
 % Hugo Esquivel, 2025.
 % -
-% Section 11.5.1 (Table 1.5-2), ASCE 7-22: Seismic importance factor.
+% Seismic Importance Factor (Section 11.5.1 (Table 1.5-2), ASCE 7-22).
 
 % Input:
 if nargin==1

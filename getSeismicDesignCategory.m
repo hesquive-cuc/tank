@@ -34,40 +34,40 @@ if S1>=0.75
 else
     switch riskCategory
         case {'I','II','III'}
-            if SDS<1/6
+            if SDS<1/6 % 0.167
                 SDC='A';
-            elseif SDS<2/6
+            elseif SDS<2/6 % 0.333
                 SDC='B';
-            elseif SDS<3/6
+            elseif SDS<3/6 % 0.500
                 SDC='C';
             else
                 SDC='D';
             end
 
-            if SD1<1/15
+            if SD1<1/15 % 0.0667
                 SDC=char(max([SDC,'A']));
-            elseif SD1<2/15
+            elseif SD1<2/15 % 0.133
                 SDC=char(max([SDC,'B']));
-            elseif SD1<3/15
+            elseif SD1<3/15 % 0.200
                 SDC=char(max([SDC,'C']));
             else
                 SDC=char(max([SDC,'D']));
             end
 
         case 'IV'
-            if SDS<1/6
+            if SDS<1/6 % 0.167
                 SDC='A';
-            elseif SDS<2/6
+            elseif SDS<2/6 % 0.333
                 SDC='C';
             else
                 SDC='D';
             end
 
-            if SD1<1/15
+            if SD1<1/15 % 0.0667
                 SDC=char(max([SDC,'A']));
-            elseif SD1<2/15
+            elseif SD1<2/15 % 0.133
                 SDC=char(max([SDC,'C']));
-            elseif SD1<3/15
+            elseif SD1<3/15 % 0.200
                 SDC=char(max([SDC,'D']));
             else
                 SDC=char(max([SDC,'E'])); % added to be on the conservative side...

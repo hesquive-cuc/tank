@@ -15,18 +15,22 @@ h=12; % in (slab thickness)
 cr=2; % in (slab cover)
 
 % In direction-1, try:
-rebar1dist='(1)#4@5"'; % /layer (rebar distribution in direction-1)
+rebar1dist='(1)#4@5"'; % /layer (rebar distribution in direction-1 per layer)
 
 rf1=0.20; % percentage of reinforcement that contributes to tension hoop capacity in direction-1 (+F11)...
 rm1=0.70; % percentage of reinforcement that contributes to flexure capacity in direction-1 (M11)...
 rv1=1-(rf1+rm1); % percentage of reinforcement that contributes to in-plane shear capacity in direction-1 (F12)...
 
+if rv1<0, warning('rv1<0'), return, end
+
 % In direction-2, try:
-rebar2dist='(1)#4@5"'; % /layer (rebar distribution in direction-2)
+rebar2dist='(1)#4@5"'; % /layer (rebar distribution in direction-2 per layer)
 
 rf2=0.20; % percentage of reinforcement that contributes to tension hoop capacity in direction-2 (+F22)...
 rm2=0.70; % percentage of reinforcement that contributes to flexure capacity in direction-2 (M22)...
 rv2=1-(rf2+rm2); % percentage of reinforcement that contributes to in-plane shear capacity in direction-2 (F12)...
+
+if rv2<0, warning('rv2<0'), return, end
 
 % This script assumes that two layers of reinforcement are specified in the slab, such that:
 % 50% of the reinforcement is distributed in the bottom face, and the rest in the top face.
@@ -67,16 +71,16 @@ fprintf('\n')
 % ----------------------------------------------------------------------------------------------------------------------
 % DIRECTION 1:
 % ----------------------------------------------------------------------------------------------------------------------
-fprintf('Considering %s in direction-1...\n',rebar1dist)
+fprintf('Considering %s in direction-1 (%d layers of reinforcement)...\n',rebar1dist,numLayers)
 
 dbmin1=0.50; % in (7.12.2.2, ACI 350-06)
-if db1<dbmin1, warning('db1<dbmin1'); end
+if db1<dbmin1, warning('db1<dbmin1'), end
 
 smax1=min([2*h,12]); % in (7.6.5, 7.12.2.2, ACI 350-06)
-if s1>smax1, warning('s1>smax1'); end
+if s1>smax1, warning('s1>smax1'), end
 
 rhomin1=max([numLayers*3*sqrt(fc)/fy,numLayers*200/fy,0.0050]); % (10.5.1, 7.12.2.1-grade60-withoutJoints, ACI 350-06)
-if rho1<rhomin1, warning('rho1<rhomin1'); end
+if rho1<rhomin1, warning('rho1<rhomin1'), end
 
 d=h-cr-(db1+db2)/2; % in (effective shear depth)
 
@@ -107,16 +111,16 @@ fprintf('\n')
 % ----------------------------------------------------------------------------------------------------------------------
 % DIRECTION 2:
 % ----------------------------------------------------------------------------------------------------------------------
-fprintf('Considering %s in direction-2...\n',rebar2dist)
+fprintf('Considering %s in direction-2 (%d layers of reinforcement)...\n',rebar2dist,numLayers)
 
 dbmin2=0.50; % in (7.12.2.2, ACI 350-06)
-if db2<dbmin2, warning('db2<dbmin2'); end
+if db2<dbmin2, warning('db2<dbmin2'), end
 
 smax2=min([2*h,12]); % in (7.6.5, 7.12.2.2, ACI 350-06)
-if s2>smax2, warning('s2>smax2'); end
+if s2>smax2, warning('s2>smax2'), end
 
 rhomin2=max([numLayers*3*sqrt(fc)/fy,numLayers*200/fy,0.0050]); % (10.5.1, 7.12.2.1-grade60-withoutJoints, ACI 350-06)
-if rho2<rhomin2, warning('rho2<rhomin2'); end
+if rho2<rhomin2, warning('rho2<rhomin2'), end
 
 d=h-cr-(db1+db2)/2; % in (effective shear depth)
 
